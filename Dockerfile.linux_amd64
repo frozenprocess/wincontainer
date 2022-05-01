@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0-jammy AS build
+WORKDIR /src
+
+COPY *.csproj . 
+RUN dotnet restore -r linux-x64 /p:PublishReadyToRun=true
+
+COPY . .
+RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-restore /p:PublishTrimmed=true
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-jammy-amd64
+WORKDIR /app
+COPY --from=build /app .
+
+EXPOSE 80
+
+ENTRYPOINT ["./wincontainer","--urls","http://0.0.0.0"]

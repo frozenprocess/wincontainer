@@ -1,0 +1,64 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Linux
+      uses: actions/checkout@v3
+    - name: Build and export
+      run: |
+        docker build -f Dockerfile.linux_amd64 -t ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-amd64 .
+        
+    - uses: actions/checkout@v1
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push images
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-amd64
+
+  build-win1809:
+    runs-on: windows-latest
+    steps:
+    - name: Build Windows 1809
+      uses: actions/checkout@v3
+    - name: Build and export
+      run: |
+        docker build -f Dockerfile.win_amd64 --build-arg=KERNEL_VERSION=1809 -t ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-1809 .
+    - uses: actions/checkout@v1
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push images
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-1809
+
+  build-win20H2:
+    runs-on: windows-latest
+    steps:
+    - name: Build Windows 20H2
+      uses: actions/checkout@v3
+    - name: Build and export
+      run: |
+        docker build -f Dockerfile.win_amd64 --build-arg=KERNEL_VERSION=20H2 -t ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-20H2 .
+    - uses: actions/checkout@v1
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push images
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USER }}/wincontainer:latest-20H2

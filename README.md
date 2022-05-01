@@ -1,0 +1,2 @@
+# wincontainer
+A Windows-based containerized application workload written in `.NET 6`; the container is based on Microsoft's `Windows Nano Server 1809` base image, making it a tiny demo application that can get an IP Address from Kubernetes in matter of seconds. (Try coreserver I dare you!)

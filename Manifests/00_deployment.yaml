@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: win-web-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-container
+  namespace: win-web-demo
+  labels:
+    app: win-web-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: win-web-container
+  template:
+    metadata:
+      labels:
+        app: win-web-container
+    spec:
+      containers:
+      - name: web-container
+        image: rezareza/wincontainer:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        kubernetes.io/os: windows
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: win-container-service
+  namespace: win-web-demo
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: win-web-container
+  type: LoadBalancer

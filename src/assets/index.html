@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinContainer</title>
+    <script src="assets/jquery.js"></script>
+    <link href="assets/bootstrap.min.css" rel="stylesheet"/>
+    <script src="assets/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="assets/bootstrap-icons.min.css" />
+    <link href="assets/style.css" rel="stylesheet"/>
+</head>
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            WinContainer
+            <span class="navbar-text"><a href="https://github.com/frozenprocess/wincontainer">Source code @ GitHub</a></span>
+          </a>
+        </div>
+    </nav>
+    <div class="container text-center">
+        <div class="row">
+          <div class="col">
+            <div id="checker"></div>
+          </div>
+          <div class="col">
+            <img src="assets/images/{{ .image }}"  style="width:15%;display: block;margin-left: auto;margin-right: auto;">
+            <div class="col"><button class="btn btn-primary"><i class="bi bi-arrow-clockwise">Try again</i></button></div>
+          </div>
+        </div>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            Made with <span style="color: #e25555;font-family: 'Roboto', sans-serif;">&hearts;</span> by <a href="https://www.tigera.io"><img height="40px" src="assets/images/Tigera_logo.png"></a>
+        </div>
+    </footer>
+</body>
+<script>
+    $( document ).ready(function() {
+        $("button").on("click", function(){
+            $("button").attr("disabled","disabled");
+            crawl();
+        } );
+        function crawl() {
+            $("#checker").html('<i>Attempting ...</i>.');
+            var jqxhr = $.get( "/crawler", function(data) {
+            
+            }).done(function (data){
+                switch(data.message.Status) {
+                    case 200:
+                        $("#checker").html('<i class="bi bi-arrow-up-circle-fill" style="color:green;"></i> Container can reach the Internet.');
+                        break;
+                    case 499:
+                        $("#checker").html('<i class="bi bi-arrow-down-circle" style="color:red;"></i> Container cannot reach the Internet.');
+                        break;
+                    default:
+                        $("#checker").html('<i>Container problems, you know how it is. Please try again.</i>');
+                }
+            })
+            .fail(function() {
+                $("#checker").html('<i class="bi bi-arrow-down-circle" style="color:red;"></i> Container cannot reach the Internet.');
+            })
+            .always(function (data){
+                $("button").removeAttr("disabled","disabled");
+                if (data.message.Debug != null) {
+
+                    console.log(data.message.Debug);
+                }
+            });
+        };
+        crawl();
+    });
+</script>
+</html>

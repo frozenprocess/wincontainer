@@ -1,16 +1,17 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-jammy AS build
+FROM golang:1.20-bullseye AS build
 WORKDIR /src
 
-COPY *.csproj . 
-RUN dotnet restore -r linux-x64 /p:PublishReadyToRun=true
+COPY src /src
+RUN CGO_ENABLED=0 go build -o ./bin/  main.go
+COPY /src/ /src/bin/
 
-COPY . .
-RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-restore /p:PublishTrimmed=true
-
-FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-jammy-amd64
+FROM ubuntu:latest
 WORKDIR /app
-COPY --from=build /app .
+COPY --from=build /src/bin .
+
+ENV PORT=80
+ENV GIN_MODE=release
 
 EXPOSE 80
 
-ENTRYPOINT ["./wincontainer","--urls","http://0.0.0.0"]
+ENTRYPOINT ["./main"]

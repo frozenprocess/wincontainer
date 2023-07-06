@@ -24,6 +24,11 @@ spec:
       - name: web-container
         image: rezareza/wincontainer:latest
         imagePullPolicy: Always
+        env:
+        - name: HTTP_URL
+          value: "http://www.githubstatus.com/"
+        - name: HTTP_TIMEOUT
+          value: "60"
         ports:
         - containerPort: 80
       nodeSelector:

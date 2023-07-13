@@ -53,6 +53,7 @@ func main() {
 			"message": response,
 		})
 		// Make sure connection is close -.- I'm looking at you conntrack
+		client.CloseIdleConnections()
 		defer resp.Body.Close()
 	})
 

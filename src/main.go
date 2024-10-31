@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strconv"
 	"time"
-
+	"crypto/tls"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,8 +34,13 @@ func main() {
 			timeout, _ = strconv.Atoi(os.Getenv("HTTP_TIMEOUT"))
 		}
 
+		insecureTLS := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+
 		client := &http.Client{
 			Timeout: time.Duration(timeout) * time.Second,
+			Transport: insecureTLS,
 		}
 
 		resp, err := client.Get(url)
